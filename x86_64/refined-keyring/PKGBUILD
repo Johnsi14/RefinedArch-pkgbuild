@@ -1,0 +1,23 @@
+# RefinedArch
+# https://github.com/Johnsi14/RefinedArch
+
+# shellcheck disable=SC2148
+pkgname=refined-keyring 
+destdir=/usr/share/pacman/keyrings
+pkgver=1 
+pkgrel=1 
+pkgdesc='RefinedArch keyring' 
+arch=('any') 
+url='https://github.com/Johnsi14/RefinedArch' 
+license=('GPL3') 
+source=('refined-keyring.install' 'refined.gpg')
+install="${pkgname}.install" 
+sha512sums=('SKIP' 'SKIP') 
+
+package() { 	
+    mkdir -p ${pkgdir}/$destdir
+    cd ..
+    cp refined.gpg ${pkgdir}/$destdir
+    install -dm 755 "${pkgdir}/$destdir"
+}
+

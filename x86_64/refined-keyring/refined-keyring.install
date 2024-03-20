@@ -1,0 +1,20 @@
+# RefinedArch
+# https://github.com/Johnsi14/RefinedArch
+
+post_install() {
+	pacman-key --init
+    pacman-key --add /usr/share/pacman/keyrings/refined.gnupg
+    pacman-key --lsign-key 6A678B3B845F22B6CC88D847108D8B736681D3D0
+    pacman-key --pupulate
+}
+
+post_upgrade() {
+	post_install() {
+	pacman-key --init
+    pacman-key --add /usr/share/pacman/keyrings/refined.gnupg
+    pacman-key --lsign-key 6A678B3B845F22B6CC88D847108D8B736681D3D0
+    pacman-key --pupulate
+}
+}
+
+
