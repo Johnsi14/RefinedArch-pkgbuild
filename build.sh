@@ -2,6 +2,7 @@
 
 # (-p builds one package $arg  -a builds all packages)
 # (-l builds the package local -p pushes the package to repo)
+# (-t move packages from testing to live -d Pushes it directly to Repo)
 
 
 # cd into directory 
