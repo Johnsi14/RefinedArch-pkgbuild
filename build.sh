@@ -4,10 +4,10 @@
 # https://github.com/Johnsi14/RefinedArch
 # This builds Packages and signs them and then auto moves them to the testing and normal Repo
 
-# (-p/package builds one package asks for the package/packages  -a builds all packages -af force Rebuilds all the packages)
-# (-l builds the package local -g pushes the package to repo)
-# (-t move packages from testing to repo -d Pushes it directly to Repo (Use only when direly needed) -nt Indicates that is has no Testing Repo)
-# (-v Prints the info in the Cooler Style -nv Prints the info in the Shorter Style)
+# done(-p/package builds one package asks for the package/packages  -a builds all packages -af force Rebuilds all the packages)
+# done(-l builds the package local -g pushes the package to repo)
+# (-t move packages from testing to repo -d Pushes it directly to Repo (Use only when direly needed max cause Script to not work) -nt Indicates that is has no Testing Repo)
+# done(-v Prints the info in the Cooler Style -nv Prints the info in the Shorter Style)
 
 #The Standart arguments to be Used
 package="-a"
@@ -51,6 +51,13 @@ print_error() {
     fi
 
     exit 1
+}
+
+print_whould() {
+    printf "\033[0;34m@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n"
+    # shellcheck disable=SC2059
+    printf "The Script whould $2: \n$1\n"
+    printf "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n\033[0m"
 }
 
 # Parse the Args
@@ -157,11 +164,10 @@ elif [[ $package == "-a" ]]; then
     all_pkg=()
     read -r -a all_pkg <<<"$pkg"
 
+    #Only add Packages which need to be updated to $packages
     for p in "${all_pkg[@]}"; do
         args=$(check_version "$p")
-        #print_info "The package $p returns $args"
         if [[ $args == *"pt"* ]] || [[ $args == *"tr"* ]] || [[ $args == *"pd"* ]]; then
-            #print_done "$p Package is getting updated"
             packages+=("$p/$args")
         fi
     done
@@ -178,35 +184,203 @@ for f in "${packages[@]}"; do
     echo "$pack"
 done
 
-for f in "${packages[@]}"; do
-    pack=$(awk -F/ '{print $1}' <<<"$f")
-    ./check.sh "$pack"
-done
+#Checks all Packages
+#for f in "${packages[@]}"; do
+#    pack=$(awk -F/ '{print $1}' <<<"$f")
+#    ./check.sh "$pack"
+#done
 
-print_info "All PKGBUILDS are Good"
+print_done "All PKGBUILDS are Good"
 
 build_pkg() {
     cd x86_64/"$1"
-    makepkg -c -f --sign
-    print_info "Built the $1 Package"
+    makepkg -f --sign
+    print_done "Built the $1 Package"
     cd ../../
 }
 
-for f in "${packages[@]}"; do
-    pack=$(awk -F/ '{print $1}' <<<"$f")
-    build_pkg "$pack"
-done
+#Builds all Packages
+#for f in "${packages[@]}"; do
+#    pack=$(awk -F/ '{print $1}' <<<"$f")
+#    build_pkg "$pack"
+#done
 
-#gets List of all Packages by checking what version is on the repo and or live repo
+#/home/jonsi/RefinedRepo/RefinedArch_pkgbuild
+pwd
 
-#functions buildpkg, movepkgtest , movepkgrepo, rebuild_dblive, autopush
+print_done "Buildt all Packages"
 
-# cd into directory
-# build package
-# delete the pkg and src directory (made by the -c flag)
-# remove files that are more than 14 days old if there is one or more file
-# check if folder has more than 4 files.
-# remove oldest file and then recheck
-# move the pkg.tar.zst file into the right folder
-# rebuild the packagebase via script placed in the repo folder
-# push the package to the git folder
+#If The Packages are only locally needed exit the Script
+if [[ "$scope" == "-l" ]]; then
+    exit 0
+fi
+
+pr_packages=()
+pt_packages=()
+tr_packages=()
+
+move_pr() {
+    #Remove the old Files
+    #rm -f RefinedArch_repo/x86_64/"$1"*
+    wd=$(ls RefinedArch_repo/x86_64/"$1"*)
+    print_whould "$wd" "Delete"
+
+    #Move the Files into the Repo
+    # mv RefinedArch_pkgbuild/x86_64/"$1"/"$1"-*[0-9]-*[0-9]-*.pkg.tar.zst RefinedArch_repo/x86_64/
+    # mv RefinedArch_pkgbuild/x86_64/"$1"/"$1"-*[0-9]-*[0-9]-*.pkg.tar.zst.sig RefinedArch_repo/x86_64/
+    wd=$(ls RefinedArch_pkgbuild/x86_64/"$1"/"$1"-*[0-9]-*[0-9]-*.pkg.tar.zst)
+    pkgnr=$(awk -F/ '{print $4}' <<<"$wd" | awk -F. '{print $1}')
+    pr_packages+=("$pkgnr")
+    print_whould "$wd" "Move into Repo from Package"
+    wd=$(ls RefinedArch_pkgbuild/x86_64/"$1"/"$1"-*[0-9]-*[0-9]-*.pkg.tar.zst.sig)
+    print_whould "$wd" "Move into Repo from Package"
+}
+
+move_pt() {
+    #Remove the old Files
+    #rm -f RefinedArch_repo_testing/x86_64/"$1"*
+    wd=$(ls RefinedArch_repo_testing/x86_64/"$1"*)
+    print_whould "$wd" "Delete"
+
+    #Move the Files into the Repo
+    # mv RefinedArch_pkgbuild/x86_64/"$1"/"$1"-*[0-9]-*[0-9]-*.pkg.tar.zst RefinedArch_repo_testing/x86_64/
+    # mv RefinedArch_pkgbuild/x86_64/"$1"/"$1"-*[0-9]-*[0-9]-*.pkg.tar.zst.sig RefinedArch_repo_testing/x86_64/
+    wd=$(ls RefinedArch_pkgbuild/x86_64/"$1"/"$1"-*[0-9]-*[0-9]-*.pkg.tar.zst)
+    pkgnr=$(awk -F/ '{print $4}' <<<"$wd" | awk -F. '{print $1}')
+    pt_packages+=("$pkgnr")
+    print_whould "$wd" "Move into Testing from Package"
+    wd=$(ls RefinedArch_pkgbuild/x86_64/"$1"/"$1"-*[0-9]-*[0-9]-*.pkg.tar.zst.sig)
+    print_whould "$wd" "Move into Testing from Package"
+
+}
+
+move_tr() {
+    #Remove the old Files
+    #rm -f RefinedArch_repo/x86_64/"$1"*
+    wd=$(ls RefinedArch_repo/x86_64/"$1"*)
+    print_whould "$wd" "Delete"
+
+    #Move the Files into the Repo
+    # mv RefinedArch_repo_testing/x86_64/"$1"/"$1"-*[0-9]-*[0-9]-*.pkg.tar.zst RefinedArch_repo/x86_64/
+    # mv RefinedArch_repo_testing/x86_64/"$1"/"$1"-*[0-9]-*[0-9]-*.pkg.tar.zst.sig RefinedArch_repo/x86_64/
+    wd=$(ls RefinedArch_repo_testing/x86_64/"$1"-*[0-9]-*[0-9]-*.pkg.tar.zst)
+    pkgnr=$(awk -F/ '{print $4}' <<<"$wd" | awk -F. '{print $1}')
+    tr_packages+=("$pkgnr")
+    print_whould "$wd" "Move into Repo from Testing"
+    wd=$(ls RefinedArch_repo_testing/x86_64/"$1"-*[0-9]-*[0-9]-*.pkg.tar.zst.sig)
+    print_whould "$wd" "Move into Repo from Testing"
+
+}
+
+make_msg_pr() {
+    for x in "${pr_packages[@]}"; do
+        # shellcheck disable=SC2059
+        printf " $x "
+    done
+}
+
+make_msg_pt() {
+    for x in "${pt_packages[@]}"; do
+        # shellcheck disable=SC2059
+        printf " $x "
+    done
+}
+
+make_msg_tr() {
+    for x in "${tr_packages[@]}"; do
+        # shellcheck disable=SC2059
+        printf " $x "
+    done
+}
+
+cd ..
+
+if [[ "$repo" == "-nt" ]]; then
+    for f in "${packages[@]}"; do
+        pack=$(awk -F/ '{print $1}' <<<"$f")
+        move_pr "$pack"
+    done
+elif [[ "$repo" == "-d" ]]; then
+    for f in "${packages[@]}"; do
+        pack=$(awk -F/ '{print $1}' <<<"$f")
+        move_pr "$pack"
+        move_pt "$pack"
+    done
+elif [[ "$repo" == "-t" ]]; then
+    for f in "${packages[@]}"; do
+        pack=$(awk -F/ '{print $1}' <<<"$f")
+        arg1=$(awk -F/ '{print $2}' <<<"$f")
+        arg2=$(awk -F/ '{print $3}' <<<"$f")
+        print_done "$arg1"
+        print_done "$arg2"
+
+        if [[ "$arg1" == "tr" ]]; then
+            move_tr "$pack"
+        fi
+
+        move_pt "$pack"
+    done
+fi
+
+if [[ $repo == "-nt" ]]; then
+    cd RefinedArch_repo
+    ./update_db.sh
+
+    git pull
+
+    git add .
+
+    git commit -m "Automated Update" -m "New Packages from PKGBUILD:: $(make_msg_pr)"
+    cd ..
+elif [[ $repo == "-d" ]]; then
+    cd RefinedArch_repo
+    ./update_db.sh
+
+    git pull
+
+    git add .
+
+    git commit -m "Automated Update" -m "New Packages from PKGBUILD:: $(make_msg_pr)"
+    cd ..
+
+    cd RefinedArch_repo_testing
+    ./update_db.sh
+
+    git pull
+
+    git add .
+
+    git commit -m "Automated Update" -m "New Packages from PKGBUILD:: $(make_msg_pt)"
+    cd ..
+elif [[ $repo == "t" ]]; then
+    cd RefinedArch_repo
+    ./update_db.sh
+
+    git pull
+
+    git add .
+
+    git commit -m "Automated Update" -m "New Packages from Testing:: $(make_msg_tr)"
+    cd ..
+
+    cd RefinedArch_repo_testing
+    ./update_db.sh
+
+    git pull
+
+    git add .
+
+    git commit -m "Automated Update" -m "New Packages from PKGBUILD:: $(make_msg_pt)"
+    cd ..
+fi
+
+cd RefinedArch_pkgbuild
+
+git pull
+
+git add .
+
+git commit -m "Automated PKGBUILD Update"
+
+print_done "Did all the Stuff. The Script will Be updated soon"
+print_done "To Automatic move the Package from Testing to the Repo after some Days run the dayly.sh Script"
