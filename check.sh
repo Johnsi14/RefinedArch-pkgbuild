@@ -17,8 +17,8 @@ check_pkg() {
         echo "Checking the $1 package"
         echo "########################################"
         cd "$1"
-        makepkg --printsrcinfo
-        makepkg --verifysource
+        makepkg --printsrcinfo -f
+        makepkg --verifysource -f
         cd ..
 
         echo "########################################"
@@ -31,9 +31,6 @@ if (("$#" == 1)); then
     check_pkg "$1"
 else
     find "." -mindepth 1 -maxdepth 1 -type d | while read -r dir; do
-        echo "########################################"
-        echo "Checking the $dir package"
-        echo "########################################"
         check_pkg "$dir"
     done
     printf "\033[0;32m@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n"

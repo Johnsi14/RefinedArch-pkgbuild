@@ -171,16 +171,31 @@ if [[ ${#packages[@]} -lt 0 ]]; then
     print_error "No Packages Updating"
 fi
 
-print_info "The following packages will be updated"
+print_info "The following packages will be updated:"
 
 for f in "${packages[@]}"; do
     pack=$(awk -F/ '{print $1}' <<<"$f")
     echo "$pack"
 done
 
-#for f in "${packages[@]}"; do
-#    ./check.sh "$f"
-#done
+for f in "${packages[@]}"; do
+    pack=$(awk -F/ '{print $1}' <<<"$f")
+    ./check.sh "$pack"
+done
+
+print_info "All PKGBUILDS are Good"
+
+build_pkg() {
+    cd x86_64/"$1"
+    makepkg -c -f --sign
+    print_info "Built the $1 Package"
+    cd ../../
+}
+
+for f in "${packages[@]}"; do
+    pack=$(awk -F/ '{print $1}' <<<"$f")
+    build_pkg "$pack"
+done
 
 #gets List of all Packages by checking what version is on the repo and or live repo
 
