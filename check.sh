@@ -13,6 +13,9 @@ check_pkg() {
         echo "Error: Package '$1' not found" >&2
         exit 1
     else
+        echo "########################################"
+        echo "Checking the $1 package"
+        echo "########################################"
         cd "$1"
         makepkg --printsrcinfo
         makepkg --verifysource

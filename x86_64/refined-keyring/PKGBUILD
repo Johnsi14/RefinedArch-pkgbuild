@@ -4,7 +4,7 @@
 # shellcheck disable=SC2148
 pkgname=refined-keyring
 destdir=/usr/share/pacman/keyrings
-pkgver=1
+pkgver=2
 pkgrel=1
 pkgdesc='RefinedArch keyring'
 arch=('any')
@@ -15,8 +15,9 @@ install="${pkgname}.install"
 sha512sums=('SKIP' 'SKIP')
 
 package() {
-    mkdir -p ${pkgdir}/$destdir
+    mkdir -p "${pkgdir}/$destdir"
     cd ..
-    cp refined.gpg ${pkgdir}/$destdir
+    cp refined.gpg "${pkgdir}/$destdir"
     install -dm 755 "${pkgdir}/$destdir"
 }
+
