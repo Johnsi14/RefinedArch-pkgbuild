@@ -221,54 +221,54 @@ tr_packages=()
 
 move_pr() {
     #Remove the old Files
-    #rm -f RefinedArch_repo/x86_64/"$1"*
-    wd=$(ls RefinedArch_repo/x86_64/"$1"*)
-    print_whould "$wd" "Delete"
+    rm -f RefinedArch_repo/x86_64/"$1"*
+    #wd=$(ls RefinedArch_repo/x86_64/"$1"*)
+    #print_whould "$wd" "Delete"
 
     #Move the Files into the Repo
-    # mv RefinedArch_pkgbuild/x86_64/"$1"/"$1"-*[0-9]-*[0-9]-*.pkg.tar.zst RefinedArch_repo/x86_64/
-    # mv RefinedArch_pkgbuild/x86_64/"$1"/"$1"-*[0-9]-*[0-9]-*.pkg.tar.zst.sig RefinedArch_repo/x86_64/
+    mv RefinedArch_pkgbuild/x86_64/"$1"/"$1"-*[0-9]-*[0-9]-*.pkg.tar.zst RefinedArch_repo/x86_64/
+    mv RefinedArch_pkgbuild/x86_64/"$1"/"$1"-*[0-9]-*[0-9]-*.pkg.tar.zst.sig RefinedArch_repo/x86_64/
     wd=$(ls RefinedArch_pkgbuild/x86_64/"$1"/"$1"-*[0-9]-*[0-9]-*.pkg.tar.zst)
     pkgnr=$(awk -F/ '{print $4}' <<<"$wd" | awk -F. '{print $1}')
     pr_packages+=("$pkgnr")
-    print_whould "$wd" "Move into Repo from Package"
-    wd=$(ls RefinedArch_pkgbuild/x86_64/"$1"/"$1"-*[0-9]-*[0-9]-*.pkg.tar.zst.sig)
-    print_whould "$wd" "Move into Repo from Package"
+    #print_whould "$wd" "Move into Repo from Package"
+    #wd=$(ls RefinedArch_pkgbuild/x86_64/"$1"/"$1"-*[0-9]-*[0-9]-*.pkg.tar.zst.sig)
+    #print_whould "$wd" "Move into Repo from Package"
 }
 
 move_pt() {
     #Remove the old Files
-    #rm -f RefinedArch_repo_testing/x86_64/"$1"*
-    wd=$(ls RefinedArch_repo_testing/x86_64/"$1"*)
-    print_whould "$wd" "Delete"
+    rm -f RefinedArch_repo_testing/x86_64/"$1"*
+    #wd=$(ls RefinedArch_repo_testing/x86_64/"$1"*)
+    #print_whould "$wd" "Delete"
 
     #Move the Files into the Repo
-    # mv RefinedArch_pkgbuild/x86_64/"$1"/"$1"-*[0-9]-*[0-9]-*.pkg.tar.zst RefinedArch_repo_testing/x86_64/
-    # mv RefinedArch_pkgbuild/x86_64/"$1"/"$1"-*[0-9]-*[0-9]-*.pkg.tar.zst.sig RefinedArch_repo_testing/x86_64/
+    mv RefinedArch_pkgbuild/x86_64/"$1"/"$1"-*[0-9]-*[0-9]-*.pkg.tar.zst RefinedArch_repo_testing/x86_64/
+    mv RefinedArch_pkgbuild/x86_64/"$1"/"$1"-*[0-9]-*[0-9]-*.pkg.tar.zst.sig RefinedArch_repo_testing/x86_64/
     wd=$(ls RefinedArch_pkgbuild/x86_64/"$1"/"$1"-*[0-9]-*[0-9]-*.pkg.tar.zst)
     pkgnr=$(awk -F/ '{print $4}' <<<"$wd" | awk -F. '{print $1}')
     pt_packages+=("$pkgnr")
-    print_whould "$wd" "Move into Testing from Package"
-    wd=$(ls RefinedArch_pkgbuild/x86_64/"$1"/"$1"-*[0-9]-*[0-9]-*.pkg.tar.zst.sig)
-    print_whould "$wd" "Move into Testing from Package"
+    #print_whould "$wd" "Move into Testing from Package"
+    #wd=$(ls RefinedArch_pkgbuild/x86_64/"$1"/"$1"-*[0-9]-*[0-9]-*.pkg.tar.zst.sig)
+    #print_whould "$wd" "Move into Testing from Package"
 
 }
 
 move_tr() {
     #Remove the old Files
-    #rm -f RefinedArch_repo/x86_64/"$1"*
-    wd=$(ls RefinedArch_repo/x86_64/"$1"*)
-    print_whould "$wd" "Delete"
+    rm -f RefinedArch_repo/x86_64/"$1"*
+    #wd=$(ls RefinedArch_repo/x86_64/"$1"*)
+    #print_whould "$wd" "Delete"
 
     #Move the Files into the Repo
-    # mv RefinedArch_repo_testing/x86_64/"$1"/"$1"-*[0-9]-*[0-9]-*.pkg.tar.zst RefinedArch_repo/x86_64/
-    # mv RefinedArch_repo_testing/x86_64/"$1"/"$1"-*[0-9]-*[0-9]-*.pkg.tar.zst.sig RefinedArch_repo/x86_64/
+    mv RefinedArch_repo_testing/x86_64/"$1"/"$1"-*[0-9]-*[0-9]-*.pkg.tar.zst RefinedArch_repo/x86_64/
+    mv RefinedArch_repo_testing/x86_64/"$1"/"$1"-*[0-9]-*[0-9]-*.pkg.tar.zst.sig RefinedArch_repo/x86_64/
     wd=$(ls RefinedArch_repo_testing/x86_64/"$1"-*[0-9]-*[0-9]-*.pkg.tar.zst)
     pkgnr=$(awk -F/ '{print $4}' <<<"$wd" | awk -F. '{print $1}')
     tr_packages+=("$pkgnr")
-    print_whould "$wd" "Move into Repo from Testing"
-    wd=$(ls RefinedArch_repo_testing/x86_64/"$1"-*[0-9]-*[0-9]-*.pkg.tar.zst.sig)
-    print_whould "$wd" "Move into Repo from Testing"
+    #print_whould "$wd" "Move into Repo from Testing"
+    #wd=$(ls RefinedArch_repo_testing/x86_64/"$1"-*[0-9]-*[0-9]-*.pkg.tar.zst.sig)
+    #print_whould "$wd" "Move into Repo from Testing"
 
 }
 
