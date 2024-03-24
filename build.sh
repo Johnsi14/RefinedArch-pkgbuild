@@ -322,6 +322,7 @@ elif [[ "$repo" == "-t" ]]; then
     done
 fi
 
+#I was to tired to do that in functions as the Script will be rewritten eventually
 if [[ $repo == "-nt" ]]; then
     cd RefinedArch_repo
     ./update_db.sh
@@ -383,4 +384,5 @@ git add .
 git commit -m "Automated PKGBUILD Update"
 
 print_done "Did all the Stuff. The Script will Be updated soon"
-print_done "To Automatic move the Package from Testing to the Repo after some Days run the dayly.sh Script"
+print_done "To push the Changes to Github run push.sh"
+print_done "To move a package from Testing to The Repo run ./move.sh"
