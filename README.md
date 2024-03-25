@@ -166,6 +166,8 @@ Add the Key from your file ~/.gnupg/repo.key into the refined.gpg file and then 
 
 #### Add additional PKGBUILDS and then Repeat all the Steps in this Paragraph
 
+#### Remove the Old Packages with the Old names from the Repo
+
 ## 6. Additional Things
 
 #### If there are any problems try the "-af" Argument in build.sh
