@@ -6,6 +6,10 @@
 2. Generate the Public Key and Upload it
 3. Get the Repositorys
 4. Make the Repository an GITHUB Pages
+5. Build the Packages for the first Time
+6. Additional Things
+7. Adding Repo to System
+8. Future
 
 ---
 
@@ -149,3 +153,48 @@ Add the Key from your file ~/.gnupg/repo.key into the refined.gpg file and then 
 ### Go to your Repo and Testing Repo and make it into github pages on the Master Branch
 
 ## 5. Build the Packages for the first Time
+
+### Check the PKGBUILDs and Package names if all refrences have Changed
+
+### Run The ./check.sh Command to Check if All packages are Buildable
+
+### Edit the Default parameters in the ./build.sh Script
+
+### Run ./build.sh without Passing any arguments to use the standart Parameters
+
+### Run the ./push.sh command to Push all Repos to Github
+
+### Add additional PKGBUILDS and then Repeat all the Steps in this Paragraph
+
+## 6. Additional Things
+
+### If there are any problems try the "-af" Argument in build.sh
+
+### If something else Breaks open an issue on the Example Repo
+
+### If you have the Testing Repo and want to move an Package to the official Repo run ./move.sh $packagename and then run push.sh
+
+## 7. Adding Repo so System
+
+### Add the Repo to /etc/pacman.conf by pasting the next line to the End of the File and change the Refrences
+
+```bash
+[refined_repo]
+SigLevel = Required DatabaseOptional
+Server = https://username.github.io/reponame/x86_64/
+```
+
+### Now you Should be able to Update and Install the Packages from the Repo
+
+## 8. Future
+
+### When i have the basic Functionality in my RefinedArch Distribution i will rewrite the Script in rust as it is the Language i am the most familiar with
+
+### New Functionality
+
+1. Automatic move from Testing to Repo after some Time
+2. Automatic Template Creation as to not have to change the Refrences
+3. Some Mose Automatic Things it can do
+4. Some Commands which allow you to more easily create PKGBUILDS
+
+### If you have any Questions you can ask on Discord  @johnsi14
