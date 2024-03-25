@@ -12,7 +12,7 @@
 #The Standart arguments to be Used
 package="-a"
 scope="-g"
-repo="-t"
+repo="-nt"
 verbose="-v"
 
 #Makes the Script Fail on Error
