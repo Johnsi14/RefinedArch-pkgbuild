@@ -4,3 +4,4 @@ src/
 *.pkg.tar.zst.sig
 *.pkg.tar.gz
 refined-calamares-config
+calamares

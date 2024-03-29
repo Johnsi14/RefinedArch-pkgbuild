@@ -1,58 +1,111 @@
 #Copied from Carli Project
 
 pkgname=calamares
-pkgver=3.2.17.1
-pkgrel=1
+_pkgname=calamares
+pkgver=3.3.6
+pkgrel=02
 pkgdesc='Distribution-independent installer framework'
 arch=('i686' 'x86_64')
 license=(GPL)
-url="https://github.com/calamares/calamares/releases/download"
+url="https://github.com/calamares/calamares/releases"
 license=('LGPL')
-depends=('kconfig' 'kcoreaddons' 'kiconthemes' 'ki18n' 'kio' 'solid' 'yaml-cpp' 'kpmcore' 'mkinitcpio-openswap'
-         'boost-libs' 'ckbcomp' 'hwinfo' 'qt5-svg' 'polkit-qt5' 'gtk-update-icon-cache' 'plasma-framework'
-         'qt5-xmlpatterns' 'squashfs-tools') # 'pythonqt>=3.2')
-makedepends=('extra-cmake-modules' 'qt5-tools' 'qt5-translations' 'git' 'boost')
+#'appstream-qt5' out as dependency and on iso
+provides=('calamares')
+depends=(
+	'boost-libs'
+	'ckbcomp'
+	'cryptsetup'
+	'doxygen'
+	'efibootmgr'
+	'gptfdisk'
+	'gtk-update-icon-cache'
+	'hwinfo'
+	'icu'
+	'kconfig'
+	'kcoreaddons'
+	'kcrash'
+	'ki18n'
+	'kparts'
+	'kpmcore'
+	'kservice'
+	'kwidgetsaddons'
+	'libpwquality'
+	'mkinitcpio-openswap'
+	'polkit-qt6'
+	'rsync'
+	'qt6-declarative'
+	'solid'
+	'squashfs-tools'
+	'yaml-cpp'
+)
+conflicts=()
+makedepends=(
+	'boost'
+	'cmake'
+	'extra-cmake-modules'
+	'git'
+	'ninja'
+	'python-jsonschema'
+	'python-pyaml'
+	'python-unidecode'
+	'qt6-tools'
+)
 backup=('usr/share/calamares/modules/bootloader.conf'
         'usr/share/calamares/modules/displaymanager.conf'
         'usr/share/calamares/modules/initcpio.conf'
         'usr/share/calamares/modules/unpackfs.conf')
 
-source=("$pkgname-$pkgver-$pkgrel.tar.gz::$url/v$pkgver/calamares-$pkgver.tar.gz")
-sha256sums=('48d713d8fd6360a85e8f874e59b0fb13e43ada78bb02a3d4109e70c4bdbcdf94')
+source=("calamares::https://github.com/erikdubois/calamares/archive/refs/tags/$pkgver-$pkgrel.tar.gz")
+
+sha256sums=('SKIP')
 
 prepare() {
-	cd ${srcdir}/calamares-${pkgver}
-	sed -i -e 's/"Install configuration files" OFF/"Install configuration files" ON/' CMakeLists.txt
 
-	# patches here
+	sed -i -e 's/"Install configuration files" OFF/"Install configuration files" ON/' "$srcdir/${_pkgname}-${pkgver}-${pkgrel}/CMakeLists.txt"
+	sed -i -e "s/desired_size = 512 \* 1024 \* 1024  \# 512MiB/desired_size = 512 \* 1024 \* 1024 \* 4  \# 2048MiB/" "$srcdir/${_pkgname}-${pkgver}-${pkgrel}/src/modules/fstab/main.py"
 
-	# change version
-	_ver="$(cat CMakeLists.txt | grep -m3 -e "  VERSION" | grep -o "[[:digit:]]*" | xargs | sed s'/ /./g')"
-	printf 'Version: %s-%s' "${_ver}" "${pkgrel}"
-	sed -i -e "s|\${CALAMARES_VERSION_MAJOR}.\${CALAMARES_VERSION_MINOR}.\${CALAMARES_VERSION_PATCH}|${_ver}-${pkgrel}|g" CMakeLists.txt
-	sed -i -e "s|CALAMARES_VERSION_RC 1|CALAMARES_VERSION_RC 0|g" CMakeLists.txt
-
+	cd ${_pkgname}-${pkgver}-${pkgrel}
+	sed -i -e "s|CALAMARES_VERSION 3.3.5|CALAMARES_VERSION $pkgver-$pkgrel|g" CMakeLists.txt
 }
 
 build() {
-	cd ${srcdir}/calamares-${pkgver}
+	cd $_pkgname-$pkgver-${pkgrel}
 
-	mkdir -p build
-	cd build
-        cmake .. \
-              -DCMAKE_BUILD_TYPE=Release \
-              -DCMAKE_INSTALL_PREFIX=/usr \
-              -DCMAKE_INSTALL_LIBDIR=lib \
-              -DWITH_PYTHONQT:BOOL=ON \
-              -DBoost_NO_BOOST_CMAKE=ON \
-              -DSKIP_MODULES="tracking webview interactiveterminal initramfs \
-                              initramfscfg dracut dracutlukscfg \
-                              dummyprocess dummypython dummycpp \
-                              dummypythonqt services-openrc"
-        make
+    cmake -S . -Bbuild \
+        -GNinja \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_INSTALL_LIBDIR=lib \
+        -DWITH_APPSTREAM=OFF \
+        -DWITH_PYBIND11=OFF \
+        -DWITH_QT6=ON \
+        -DSKIP_MODULES="dracut \
+            dracutlukscfg \
+            dummycpp \
+            dummyprocess \
+            dummypython \
+            dummypythonqt \
+            initramfs \
+            initramfscfg \
+            interactiveterminal \
+            keyboardq \
+            license \
+            localeq \
+            oemid \
+            packagechooserq \
+            partitionq \
+            services-openrc \
+            summaryq \
+            tracking \
+            usersq \
+            welcomeq \
+            zfs \
+            zfshostid"
+
+    cmake --build build
 }
 
 package() {
-	cd ${srcdir}/calamares-${pkgver}/build
-	make DESTDIR="$pkgdir" install
+	cd ${_pkgname}-${pkgver}-${pkgrel}/build
+	DESTDIR="${pkgdir}" cmake --build . --target install
 }
