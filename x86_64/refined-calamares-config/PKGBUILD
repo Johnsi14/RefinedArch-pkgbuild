@@ -1,6 +1,6 @@
 #Copied over From Carli Project
 
-pkgname=carli-calamares-config
+pkgname=refined-calamares-config
 _destname1="/etc"
 _destname2="/etc"
 _destname3="/etc"
